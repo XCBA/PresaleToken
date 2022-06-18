@@ -11,6 +11,7 @@ import ERC20Artifact from "@openzeppelin/contracts/build/contracts/ERC20.json";
 import PresaleTokenArtifact from "../contracts/PresaleToken.json";
 import contractAddress from "../contracts/contract-address.json";
 
+
 // All the logic of this dapp is contained in the Dapp component.
 // These other components are just presentational ones: they don't have any
 // logic. They just render HTML.
@@ -21,6 +22,8 @@ import { Transfer } from "./Transfer";
 import { TransactionErrorMessage } from "./TransactionErrorMessage";
 import { WaitingForTransactionMessage } from "./WaitingForTransactionMessage";
 import { NoTokensMessage } from "./NoTokensMessage";
+
+import Countdown from 'react-countdown';
 
 // This is the Hardhat Network id, you might change it in the hardhat.config.js.
 // If you are using MetaMask, be sure to change the Network id to 1337.
@@ -63,7 +66,9 @@ export class Dapp extends React.Component {
       TICKET_TOKEN : undefined,
 
       TOTAL_TOKEN : undefined,
-      TOTAL_TICKET : undefined
+      TOTAL_TICKET : undefined,
+
+      COUNTDOWNTIME : undefined
     };
 
     this.state = this.initialState;
@@ -122,17 +127,32 @@ export class Dapp extends React.Component {
             </p>
           </div>
           <div className="col-12">
-            Ticket:
-            <b> 
-              {this.state.TICKET_PRICE?.toString()} USDC / {this.state.TICKET_TOKEN?.toString()} OLE
-            </b>
+            <p>
+              Ticket:
+              <b> 
+                {this.state.TICKET_PRICE?.toString()} USDC / {this.state.TICKET_TOKEN?.toString()} OLE
+              </b>
+            </p>
           </div>
-
-          <div className="col-6">
-            Left Token: <b> {this.state.TOTAL_TOKEN?.toString()} </b>
+          <div className="col-md-4 col-sm-12">
+            <p>
+              Left Token: <b> {this.state.TOTAL_TOKEN?.toString()} </b>
+            </p>
           </div>
-          <div className="col-6">
-            Left Tickets: <b> {this.state.TOTAL_TICKET?.toString()} </b>
+          <div className="col-md-4 col-sm-12">
+            <p>
+              Left Tickets: <b> {this.state.TOTAL_TICKET?.toString()} </b>
+            </p>
+          </div>
+          <div className="col-md-4 col-sm-12">
+            {this.state.COUNTDOWNTIME != undefined && 
+              <p>
+                <span>Left Time:</span>
+                <b>
+                 <Countdown date={this.state.COUNTDOWNTIME}/>
+                </b>
+              </p>
+            }
           </div>
         </div>
 
@@ -324,6 +344,13 @@ export class Dapp extends React.Component {
 
     this.setState({ TOTAL_TOKEN });
     this.setState({ TOTAL_TICKET });
+
+    if (this.state.COUNTDOWNTIME == undefined) {
+      let leftSeconds = await this._presale.getLeftSeconds();
+      this.setState({
+        COUNTDOWNTIME : Date.now() + leftSeconds * 1000
+      });
+    }
   }
 
   // This method sends an ethereum transaction to transfer tokens.
@@ -344,6 +371,7 @@ export class Dapp extends React.Component {
       if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
         return;
       }
+      
       this.setState({ transactionError: error });
     } finally {
       this.setState({ txBeingSent: undefined });
@@ -352,17 +380,18 @@ export class Dapp extends React.Component {
     // Buying tickets
     try {
       this._dismissTransactionError();
-      const tx = await this._presale.approve(contractAddress.PresaleToken, amount * this.state.TICKET_PRICE);
+      const tx = await this._presale.buyTicket(amount);
       this.setState({ txBeingSent: tx.hash });
       const receipt = await tx.wait();
       if (receipt.status == 0) {
-        throw new Error("Approve USDC failed");
+        throw new Error("Buy Ticket failed");
       }
       await this._updateBalance();
     } catch (error) {
       if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
         return;
       }
+      console.log('error', error);
       this.setState({ transactionError: error });
     } finally {
       this.setState({ txBeingSent: undefined });
