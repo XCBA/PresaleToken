@@ -6,6 +6,8 @@ import { ethers } from "ethers";
 // We import the contract's artifacts and address here, as we are going to be
 // using them with ethers
 import TokenArtifact from "../contracts/Token.json";
+import ERC20Artifact from "@openzeppelin/contracts/build/contracts/ERC20.json";
+
 import PresaleTokenArtifact from "../contracts/PresaleToken.json";
 import contractAddress from "../contracts/contract-address.json";
 
@@ -100,16 +102,17 @@ export class Dapp extends React.Component {
               {this.state.tokenData.name} ({this.state.tokenData.symbol})
             </h1>
             <p>
-              Welcome <b>{this.state.selectedAddress}</b>, you have{" "}
-              <b>
-                {this.state.balance.toString()} {this.state.tokenData.symbol}
-              </b>
-              .
+              Welcome <b>{this.state.selectedAddress}</b>
             </p>
           </div>
           <div className="col-12">
             <p>
-              Your have <b>{this.state.USDC_balance.toString()}</b> USDC tokens.
+              Your have {this.state.balance?.toString()} {this.state.tokenData.symbol}
+            </p>
+          </div>
+          <div className="col-12">
+            <p>
+              Your have <b>{this.state.USDC_balance?.toString()}</b> USDC tokens.
             </p>
           </div>
         </div>
@@ -243,8 +246,10 @@ export class Dapp extends React.Component {
       this._provider.getSigner(0)
     );
 
-    this._token = new ethers.Contract(
-      contractAddress.
+    this._usdc = new ethers.Contract(
+      contractAddress.USDC,
+      ERC20Artifact.abi,
+      this._provider.getSigner(0)
     );
   }
 
@@ -279,6 +284,9 @@ export class Dapp extends React.Component {
   async _updateBalance() {
     const balance = await this._token.balanceOf(this.state.selectedAddress);
     this.setState({ balance });
+
+    const USDC_balance = await this._usdc.balanceOf(this.state.selectedAddress);
+    this.setState({ USDC_balance});
   }
 
   // This method sends an ethereum transaction to transfer tokens.
