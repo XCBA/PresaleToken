@@ -330,50 +330,25 @@ export class Dapp extends React.Component {
   // While this action is specific to this application, it illustrates how to
   // send a transaction.
   async _buyTokens(amount) {
-    alert('not implemented');
-    return;
+    // Approving USDC
+    try {
+      this._dismissTransactionError();
+      const tx = await this._usdc.approve(contractAddress.PresaleToken, amount * this.state.TICKET_PRICE);
+      this.setState({ txBeingSent: tx.hash });
+      const receipt = await tx.wait();
+      if (receipt.status == 0) {
+        throw new Error("Approve USDC failed");
+      }
+      await this._updateBalance();
+    } catch (error) {
+      if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
+        return;
+      }
+      this.setState({ transactionError: error });
+    } finally {
+      this.setState({ txBeingSent: undefined });
+    }
 
-    // try {
-    //   // If a transaction fails, we save that error in the component's state.
-    //   // We only save one such error, so before sending a second transaction, we
-    //   // clear it.
-    //   this._dismissTransactionError();
-
-    //   // We send the transaction, and save its hash in the Dapp's state. This
-    //   // way we can indicate that we are waiting for it to be mined.
-    //   const tx = await this._token.transfer(to, amount);
-    //   this.setState({ txBeingSent: tx.hash });
-
-    //   // We use .wait() to wait for the transaction to be mined. This method
-    //   // returns the transaction's receipt.
-    //   const receipt = await tx.wait();
-
-    //   // The receipt, contains a status flag, which is 0 to indicate an error.
-    //   if (receipt.status === 0) {
-    //     // We can't know the exact error that made the transaction fail when it
-    //     // was mined, so we throw this generic one.
-    //     throw new Error("Transaction failed");
-    //   }
-
-    //   // If we got here, the transaction was successful, so you may want to
-    //   // update your state. Here, we update the user's balance.
-    //   await this._updateBalance();
-    // } catch (error) {
-    //   // We check the error code to see if this error was produced because the
-    //   // user rejected a tx. If that's the case, we do nothing.
-    //   if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
-    //     return;
-    //   }
-
-    //   // Other errors are logged and stored in the Dapp's state. This is used to
-    //   // show them to the user, and for debugging.
-    //   console.error(error);
-    //   this.setState({ transactionError: error });
-    // } finally {
-    //   // If we leave the try/catch, we aren't sending a tx anymore, so we clear
-    //   // this part of the state.
-    //   this.setState({ txBeingSent: undefined });
-    // }
   }
 
   // This method just clears part of the state.
