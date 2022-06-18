@@ -57,7 +57,13 @@ export class Dapp extends React.Component {
       txBeingSent: undefined,
       transactionError: undefined,
       networkError: undefined,
-      USDC_balance : undefined
+      USDC_balance : undefined,
+
+      TICKET_PRICE : undefined,
+      TICKET_TOKEN : undefined,
+
+      TOTAL_TOKEN : undefined,
+      TOTAL_TICKET : undefined
     };
 
     this.state = this.initialState;
@@ -114,6 +120,19 @@ export class Dapp extends React.Component {
             <p>
               Your have <b>{this.state.USDC_balance?.toString()}</b> USDC tokens.
             </p>
+          </div>
+          <div className="col-6">
+            Ticket Price: <b> {this.state.TICKET_PRICE?.toString()} </b>
+          </div>
+          <div className="col-6">
+            Ticket TokenCnt: <b> {this.state.TICKET_TOKEN?.toString()} </b>
+          </div>
+
+          <div className="col-6">
+            Total Token: <b> {this.state.TOTAL_TOKEN?.toString()} </b>
+          </div>
+          <div className="col-6">
+            Total Tickets: <b> {this.state.TOTAL_TICKET?.toString()} </b>
           </div>
         </div>
 
@@ -251,6 +270,12 @@ export class Dapp extends React.Component {
       ERC20Artifact.abi,
       this._provider.getSigner(0)
     );
+
+    this._presale = new ethers.Contract(
+      contractAddress.PresaleToken,
+      PresaleTokenArtifact.abi,
+      this._provider.getSigner(0)
+    );
   }
 
   // The next two methods are needed to start and stop polling data. While
@@ -287,6 +312,18 @@ export class Dapp extends React.Component {
 
     const USDC_balance = await this._usdc.balanceOf(this.state.selectedAddress);
     this.setState({ USDC_balance});
+
+    const TICKET_PRICE = await this._presale._ticket_price();
+    const TICKET_TOKEN = await this._presale._ticket_token();
+
+    const TOTAL_TOKEN = await this._presale.getCurrentSupply();
+    const TOTAL_TICKET = TOTAL_TOKEN / Math.max(1, TICKET_TOKEN);
+
+    this.setState({ TICKET_PRICE });
+    this.setState({ TICKET_TOKEN });
+
+    this.setState({ TOTAL_TOKEN });
+    this.setState({ TOTAL_TICKET });
   }
 
   // This method sends an ethereum transaction to transfer tokens.
