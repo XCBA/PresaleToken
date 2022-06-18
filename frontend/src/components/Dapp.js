@@ -349,6 +349,24 @@ export class Dapp extends React.Component {
       this.setState({ txBeingSent: undefined });
     }
 
+    // Buying tickets
+    try {
+      this._dismissTransactionError();
+      const tx = await this._presale.approve(contractAddress.PresaleToken, amount * this.state.TICKET_PRICE);
+      this.setState({ txBeingSent: tx.hash });
+      const receipt = await tx.wait();
+      if (receipt.status == 0) {
+        throw new Error("Approve USDC failed");
+      }
+      await this._updateBalance();
+    } catch (error) {
+      if (error.code === ERROR_CODE_TX_REJECTED_BY_USER) {
+        return;
+      }
+      this.setState({ transactionError: error });
+    } finally {
+      this.setState({ txBeingSent: undefined });
+    }
   }
 
   // This method just clears part of the state.
