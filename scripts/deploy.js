@@ -1,4 +1,5 @@
 // This is a script for deploying your contracts. You can adapt it to deploy
+
 // yours, or create new ones.
 async function main() {
   // This is just a convenience check
@@ -25,11 +26,23 @@ async function main() {
 
   console.log("Token address:", token.address);
 
+  const PresaleToken = await ethers.getContractFactory("PresaleToken");
+  const presaleToken = await PresaleToken.deploy(token.address);
+  await presaleToken.deployed();
+
+  console.log("PresaleToken address:", presaleToken.address);
+
+  const APPROVE_AMOUNT = 5000;
+
+  token.connect(deployer).approve(presaleToken.address, APPROVE_AMOUNT);
+
+  console.log(`Approved ${APPROVE_AMOUNT} tokens to PresaleToken Address.`);
+
   // We also save the contract's artifacts and address in the frontend directory
-  saveFrontendFiles(token);
+  saveFrontendFiles(token, presaleToken);
 }
 
-function saveFrontendFiles(token) {
+function saveFrontendFiles(token, presaleToken) {
   const fs = require("fs");
   const contractsDir = __dirname + "/../frontend/src/contracts";
 
@@ -39,7 +52,11 @@ function saveFrontendFiles(token) {
 
   fs.writeFileSync(
     contractsDir + "/contract-address.json",
-    JSON.stringify({ Token: token.address }, undefined, 2)
+    JSON.stringify({ 
+      Token: token.address, 
+      PresaleToken : presaleToken.address,
+      USDC : "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b"
+    }, undefined, 2)
   );
 
   const TokenArtifact = artifacts.readArtifactSync("Token");
@@ -48,6 +65,15 @@ function saveFrontendFiles(token) {
     contractsDir + "/Token.json",
     JSON.stringify(TokenArtifact, null, 2)
   );
+
+  const PresaleTokenArtifact = artifacts.readArtifactSync("PresaleToken");
+ 
+  fs.writeFileSync(
+    contractsDir + "/PresaleToken.json",
+    JSON.stringify(PresaleTokenArtifact, null, 2)
+  );
+
+  console.log('Saving to frontend success.');
 }
 
 main()

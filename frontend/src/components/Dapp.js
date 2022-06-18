@@ -6,6 +6,7 @@ import { ethers } from "ethers";
 // We import the contract's artifacts and address here, as we are going to be
 // using them with ethers
 import TokenArtifact from "../contracts/Token.json";
+import PresaleTokenArtifact from "../contracts/PresaleToken.json";
 import contractAddress from "../contracts/contract-address.json";
 
 // All the logic of this dapp is contained in the Dapp component.
@@ -23,7 +24,7 @@ import { NoTokensMessage } from "./NoTokensMessage";
 // If you are using MetaMask, be sure to change the Network id to 1337.
 // Here's a list of network ids https://docs.metamask.io/guide/ethereum-provider.html#properties
 // to use when deploying to other networks.
-const HARDHAT_NETWORK_ID = '31337';
+const HARDHAT_NETWORK_ID = '4';
 
 // This is an error code that indicates that the user canceled a transaction
 const ERROR_CODE_TX_REJECTED_BY_USER = 4001;
@@ -54,6 +55,7 @@ export class Dapp extends React.Component {
       txBeingSent: undefined,
       transactionError: undefined,
       networkError: undefined,
+      USDC_balance : undefined
     };
 
     this.state = this.initialState;
@@ -103,6 +105,11 @@ export class Dapp extends React.Component {
                 {this.state.balance.toString()} {this.state.tokenData.symbol}
               </b>
               .
+            </p>
+          </div>
+          <div className="col-12">
+            <p>
+              Your have <b>{this.state.USDC_balance.toString()}</b> USDC tokens.
             </p>
           </div>
         </div>
@@ -234,6 +241,10 @@ export class Dapp extends React.Component {
       contractAddress.Token,
       TokenArtifact.abi,
       this._provider.getSigner(0)
+    );
+
+    this._token = new ethers.Contract(
+      contractAddress.
     );
   }
 
