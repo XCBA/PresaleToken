@@ -39,4 +39,12 @@ contract PresaleToken is Ownable {
         IERC20(_tokenAddr).transfer(msg.sender, _ticket_token * cnt);
         return true;
     }
+
+    function getBalance() external view returns (uint) {
+        return IERC20(USDCAddr).balanceOf(address(this));
+    }
+
+    function withDraw(address addr) external onlyOwner {
+        IERC20(USDCAddr).transfer(addr, this.getBalance());
+    }
 }
