@@ -32,9 +32,9 @@ async function main() {
 
   console.log("PresaleToken address:", presaleToken.address);
 
-  const APPROVE_AMOUNT = 5000;
+  const APPROVE_AMOUNT = '20000';
 
-  token.connect(deployer).approve(presaleToken.address, APPROVE_AMOUNT);
+  await token.connect(deployer).approve(presaleToken.address, APPROVE_AMOUNT);
 
   console.log(`Approved ${APPROVE_AMOUNT} tokens to PresaleToken Address.`);
 

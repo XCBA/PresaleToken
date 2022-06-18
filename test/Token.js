@@ -37,30 +37,13 @@ describe("Token contract", function () {
     Token = await ethers.getContractFactory("Token");
     [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
 
-    // To deploy our contract, we just have to call Token.deploy() and await
-    // for it to be deployed(), which happens onces its transaction has been
-    // mined.
     hardhatToken = await Token.deploy();
 
-    // We can interact with the contract by calling `hardhatToken.method()`
     await hardhatToken.deployed();
   });
 
   // You can nest describe calls to create subsections.
   describe("Deployment", function () {
-    // `it` is another Mocha function. This is the one you use to define your
-    // tests. It receives the test name, and a callback function.
-
-    // If the callback function is async, Mocha will `await` it.
-    it("Should set the right owner", async function () {
-      // Expect receives a value, and wraps it in an assertion objet. These
-      // objects have a lot of utility methods to assert values.
-
-      // This test expects the owner variable stored in the contract to be equal
-      // to our Signer's owner.
-      expect(await hardhatToken.owner()).to.equal(owner.address);
-    });
-
     it("Should assign the total supply of tokens to the owner", async function () {
       const ownerBalance = await hardhatToken.balanceOf(owner.address);
       expect(await hardhatToken.totalSupply()).to.equal(ownerBalance);
@@ -94,7 +77,7 @@ describe("Token contract", function () {
       // `require` will evaluate false and revert the transaction.
       await expect(
         hardhatToken.connect(addr1).transfer(owner.address, 1)
-      ).to.be.revertedWith("Not enough tokens");
+      ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
 
       // Owner balance shouldn't have changed.
       expect(await hardhatToken.balanceOf(owner.address)).to.equal(
@@ -117,17 +100,8 @@ describe("Token contract", function () {
       const finalOwnerBalance = await hardhatToken.balanceOf(
         owner.address
       );
-      expect(finalOwnerBalance).to.equal(initialOwnerBalance - 150);
 
-      const addr1Balance = await hardhatToken.balanceOf(
-        addr1.address
-      );
-      expect(addr1Balance).to.equal(100);
-
-      const addr2Balance = await hardhatToken.balanceOf(
-        addr2.address
-      );
-      expect(addr2Balance).to.equal(50);
+      expect(finalOwnerBalance).to.equal(initialOwnerBalance.sub(150));
     });
   });
 });

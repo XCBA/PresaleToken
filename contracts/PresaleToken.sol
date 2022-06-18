@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract PresaleToken is Ownable {
     uint public _ticket_price = 100;
     uint public _ticket_token = 10;
-    address _tokenAddr;
+    address public _tokenAddr;
 
     constructor(address tokenAddr) {
         require (tokenAddr != address(0), "Null is impossible");
@@ -15,6 +15,6 @@ contract PresaleToken is Ownable {
     }
 
     function getCurrentSupply() external view returns (uint256) {
-        return IERC20(_tokenAddr).allowance(_tokenAddr, address(this));
+        return IERC20(_tokenAddr).allowance(owner(), address(this));
     }
 }

@@ -122,17 +122,17 @@ export class Dapp extends React.Component {
             </p>
           </div>
           <div className="col-6">
-            Ticket Price: <b> {this.state.TICKET_PRICE?.toString()} </b>
+            Price / Ticket: <b> {this.state.TICKET_PRICE?.toString()} </b>
           </div>
           <div className="col-6">
-            Ticket TokenCnt: <b> {this.state.TICKET_TOKEN?.toString()} </b>
+            Tokens / Ticket: <b> {this.state.TICKET_TOKEN?.toString()} </b>
           </div>
 
           <div className="col-6">
-            Total Token: <b> {this.state.TOTAL_TOKEN?.toString()} </b>
+            Max Token: <b> {this.state.TOTAL_TOKEN?.toString()} </b>
           </div>
           <div className="col-6">
-            Total Tickets: <b> {this.state.TOTAL_TICKET?.toString()} </b>
+            Max Tickets: <b> {this.state.TOTAL_TICKET?.toString()} </b>
           </div>
         </div>
 
