@@ -121,18 +121,18 @@ export class Dapp extends React.Component {
               Your have <b>{this.state.USDC_balance?.toString()}</b> USDC tokens.
             </p>
           </div>
-          <div className="col-6">
-            Price / Ticket: <b> {this.state.TICKET_PRICE?.toString()} </b>
-          </div>
-          <div className="col-6">
-            Tokens / Ticket: <b> {this.state.TICKET_TOKEN?.toString()} </b>
+          <div className="col-12">
+            Ticket:
+            <b> 
+              {this.state.TICKET_PRICE?.toString()} USDC / {this.state.TICKET_TOKEN?.toString()} OLE
+            </b>
           </div>
 
           <div className="col-6">
-            Max Token: <b> {this.state.TOTAL_TOKEN?.toString()} </b>
+            Left Token: <b> {this.state.TOTAL_TOKEN?.toString()} </b>
           </div>
           <div className="col-6">
-            Max Tickets: <b> {this.state.TOTAL_TICKET?.toString()} </b>
+            Left Tickets: <b> {this.state.TOTAL_TICKET?.toString()} </b>
           </div>
         </div>
 

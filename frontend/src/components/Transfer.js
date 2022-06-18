@@ -18,7 +18,7 @@ export function Transfer({ buyTokens, tokenSymbol }) {
         }}
       >
         <div className="form-group">
-          <label>Amount of {tokenSymbol}</label>
+          <label>Amount of Tickets</label>
           <input
             className="form-control"
             type="number"
