@@ -107,7 +107,7 @@ export class Dapp extends React.Component {
           </div>
           <div className="col-12">
             <p>
-              Your have {this.state.balance?.toString()} {this.state.tokenData.symbol}
+              Your have <b>{this.state.balance?.toString()}</b> {this.state.tokenData.symbol} tokens.
             </p>
           </div>
           <div className="col-12">
@@ -148,7 +148,7 @@ export class Dapp extends React.Component {
             {/*
               If the user has no tokens, we don't show the Transfer form
             */}
-            {this.state.balance.eq(0) && (
+            {this.state.USDC_balance?.eq(0) && (
               <NoTokensMessage selectedAddress={this.state.selectedAddress} />
             )}
 
@@ -158,7 +158,7 @@ export class Dapp extends React.Component {
               The component doesn't have logic, it just calls the transferTokens
               callback.
             */}
-            {this.state.balance.gt(0) && (
+            {this.state.USDC_balance?.gt(0) && (
               <Transfer
                 transferTokens={(to, amount) =>
                   this._transferTokens(to, amount)
