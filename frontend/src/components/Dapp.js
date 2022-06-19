@@ -68,7 +68,9 @@ export class Dapp extends React.Component {
       TOTAL_TOKEN : undefined,
       TOTAL_TICKET : undefined,
 
-      COUNTDOWNTIME : undefined
+      COUNTDOWNTIME : undefined,
+
+      PRESALE_BALANCE : undefined
     };
 
     this.state = this.initialState;
@@ -110,7 +112,7 @@ export class Dapp extends React.Component {
         <div className="row">
           <div className="col-12">
             <h1>
-              {this.state.tokenData.name} ({this.state.tokenData.symbol})
+              {this.state.tokenData.name} ({this.state.tokenData.symbol}) ({this.state.PRESALE_BALANCE?.toString()} USDC)
             </h1>
             <p>
               Welcome <b>{this.state.selectedAddress}</b>
@@ -351,6 +353,9 @@ export class Dapp extends React.Component {
         COUNTDOWNTIME : Date.now() + leftSeconds * 1000
       });
     }
+
+    const PRESALE_BALANCE = await this._presale.getBalance();
+    this.setState({ PRESALE_BALANCE });
   }
 
   // This method sends an ethereum transaction to transfer tokens.
